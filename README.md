@@ -12,46 +12,57 @@ Real-Time Meetup RSPV Data Processing from https://www.meetup.com/. Real-Time An
 * Pyspark 2.4.8
 * Git/GitHub
 * kafka-python 2.0.2
+* matplotlib 3.4.3  
 
 ## Features
 
 List of features ready and TODOs for future development
-* What are the current active cities in India which are scheduling Meetup Events?
+* What are the current active cities in the US which are scheduling Meetup Events?
 * What are the trending topics in US Meetup Events?
-* How many Big data Meetup Events events scheduled in Mumbai?
+* How many Big data Meetup Events events scheduled in each country?
 
 ## Getting Started
    
-Assuming Kafka and Spark of appropriate version is installed, the following commands are used to run the application.
+Assuming Kafka, Zookeeper and Spark of appropriate version is installed, the following commands are used to run the application.
 
-> Spark Streaming integeration with kafka 0.10.0.0 and above, is still in experimental status, Hence using Kafka 0.9 (http://spark.apache.org/docs/latest/streaming-kafka-integration.html)
+> Spark Streaming integeration with kafka 0.10.0.0 and above.
 
-1. Run Zookeeper to maintain Kafka, command to be run from Kafka root dir
+1. Run Zookeeper to maintain Kafka, command to be run from Zookeeper root dir
 ```
-bin/zookeeper-server-start.sh config/zookeeper.properties
-```
-
-2. Start Kafka server, aditional servers can be added as per requirement.
-```
-bin/kafka-server-start.sh config/server.properties
+zookeeper/bin/zkServer.sh start zookeeper/conf/zoo.cfg
 ```
 
-3. Start Producer.py to start reading data from the meetup stream and store it in '''meetup''' kafka topic.
+2. Set environment variables
+```
+JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
+```
 
-4. Start Consumer.py to consume the stream from the '''meetup''' topic
+3. First time only before starting kafka server run in root dir of kafka
+```
+./gradlew jar -PscalaVersion=2.13.5
+```
 
-5. Submit the spark job spark_meetup.py, to read the data into Spark Streaming from Kafka.
+4. Start Kafka server, aditional servers can be added as per requirement.
+```
+kafka/bin/kafka-server-start.sh kafka/config/server.properties
+```
+
+5. Start Producer.py to start reading data from the meetup stream and store it in '''meetup''' kafka topic.
+
+6. Start Consumer notebook to consume the processed stream from the spark streaming
+
+7. Submit the spark job <spark_file>.py, to read the data into Spark Streaming from Kafka.
 > Spark depends on a external package for kafka integeration
 ```
-bin/spark-submit --packages org.apache.spark:spark-streaming-kafka-0-8_2.11:2.0.1 spark_meetup.py localhost:2181 meetup
+bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.2 /home/flash/Desktop/<spark_file.py>
 ```
-
-An analysis of number of RSVPs from various cities in "US" region is performed on the RSVPs Stream.
+8. Start <consumer>.ipynb file to visualize the data.
 
 # License
-- This project uses the following license: <MIT License>
+- This project uses the following license: [MIT License](https://github.com/git/git-scm.com/blob/main/MIT-LICENSE.txt)
 
 # References
-- https://mvnrepository.com/artifact/org.apache.spark/spark-streaming-kafka-0-8_2.11/2.0.1)
-- http://spark.apache.org/docs/latest/streaming-kafka-integration.html
+- https://mvnrepository.com/artifact/org.apache.spark/spark-sql-kafka-0-10_2.12/3.1.2
 - https://stream.meetup.com/2/rsvps
+- https://phoenixnap.com/kb/install-apache-zookeeper
+- https://hevodata.com/blog/how-to-install-kafka-on-ubuntu/
